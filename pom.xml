@@ -1,0 +1,130 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.gdou</groupId>
+    <artifactId>manager-system</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>manager-system</name>
+    <modules>
+        <module>admin</module>
+        <module>common</module>
+        <module>framework</module>
+        <module>system</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.1</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <skipTests>true</skipTests>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <manager-system.version>1.0</manager-system.version>
+        <kaptcha.version>2.3.3</kaptcha.version>
+        <druid.version>1.2.8</druid.version>
+        <fastjson.version>2.0.25</fastjson.version>
+        <mybatis-plus.version>3.3.0</mybatis-plus.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <poi.version>4.1.2</poi.version>
+        <oshi.version>6.4.0</oshi.version>
+        <jwt.version>0.9.1</jwt.version>
+        <jaxb-api.version>2.3.1</jaxb-api.version>
+    </properties>
+
+    <dependencyManagement>
+
+        <dependencies>
+        <!--   解决jdk高版本没有javax.xml.bind.DatatypeConverter问题   -->
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb-api.version}</version>
+            </dependency>
+            <!-- Token生成与解析-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+
+            <!-- io常用工具类 -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.gdou</groupId>
+                <artifactId>common</artifactId>
+                <version>${manager-system.version}</version>
+            </dependency>
+
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gdou</groupId>
+                <artifactId>system</artifactId>
+                <version>${manager-system.version}</version>
+            </dependency>
+
+            <!-- 解析客户端操作系统、浏览器等 -->
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker.version}</version>
+            </dependency>
+
+            <!-- excel工具 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <!-- 阿里JSON解析器 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.gdou</groupId>
+                <artifactId>framework</artifactId>
+                <version>${manager-system.version}</version>
+            </dependency>
+
+            <!-- 验证码 -->
+            <dependency>
+                <groupId>pro.fessional</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

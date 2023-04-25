@@ -2,6 +2,7 @@ package com.gdou.admin.controller;
 
 
 import com.gdou.common.annotaion.Log;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysRole;
 import com.gdou.common.domain.entity.SysUser;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.github.pagehelper.PageHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ import static com.gdou.common.utils.SecurityUtils.getUsername;
 
 @RestController
 @RequestMapping("/system/user")
-public class SysUserController {
+public class SysUserController extends BaseController {
 
     @Autowired
     private SysUserService userService;
@@ -35,8 +37,10 @@ public class SysUserController {
 
     @GetMapping("/list")
     @PreAuthorize("@check.hasPermi('system:user:list')")
-    public R list(@RequestParam Map<String, String> queryMap) {
-        return R.success(userService.selectUserList(queryMap));
+    public R list(SysUser sysUser) {
+        startPage();
+        List<SysUser> list = userService.selectUserList(sysUser);
+        return R.success(getPageVo(list));
     }
 
     @GetMapping({"/", "/{userId}"})
@@ -47,8 +51,9 @@ public class SysUserController {
         var mapBuilder = MapUtil.builder()
                 .put("roles", roles);
         if (StringUtils.isNotNull(userId)) {
+            SysUser sysUser = userService.selectUserById(userId);
             mapBuilder.put("user", userService.selectUserById(userId))
-                    .put("roleIds", roleService.selectUserRoleIds(userId));
+                    .put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
         }
         return R.success(mapBuilder.build());
     }

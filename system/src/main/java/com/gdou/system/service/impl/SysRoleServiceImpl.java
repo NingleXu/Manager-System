@@ -1,11 +1,6 @@
 package com.gdou.system.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysRole;
 import com.gdou.common.domain.entity.SysRoleMenu;
 import com.gdou.common.domain.entity.SysUser;
@@ -25,14 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.gdou.common.constant.Constants.DELETE;
-import static com.gdou.common.constant.Constants.NO_DELETE;
-import static com.gdou.common.constant.PageConstants.*;
-import static com.gdou.common.constant.UserConstants.NO_EXIST;
+
+import static com.gdou.common.constant.UserConstants.*;
 import static com.gdou.common.utils.SecurityUtils.getUserId;
 
 @Service
-public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements SysRoleService {
+public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired
     private SysRoleMapper roleMapper;
@@ -59,24 +52,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      * 查询所有角色
      */
     @Override
-    public PageVo<SysRole> selectRoleList(Map<String, String> queryCondition) {
-        LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
-        String beginTime = queryCondition.get(BEGIN_TIME);
-        String endTime = queryCondition.get(END_TIME);
-        queryWrapper.like(StringUtils.isNotEmpty(queryCondition.get(ROLE_NAME)),
-                        SysRole::getRoleName, queryCondition.get(ROLE_NAME))
-                .like(StringUtils.isNotEmpty(queryCondition.get(ROLE_KEY)),
-                        SysRole::getRoleId, queryCondition.get(ROLE_KEY))
-                .eq(StringUtils.isNotEmpty(queryCondition.get(STATUS)),
-                        SysRole::getStatus, queryCondition.get(STATUS))
-                .between(StringUtils.isNotEmpty(beginTime) && StringUtils.isNotEmpty(endTime),
-                        SysRole::getCreateTime, beginTime, endTime)
-                .eq(SysRole::getDelFlag, NO_DELETE);
-
-        Page<SysRole> page = new Page<>(Long.parseLong(queryCondition.get(PAGE_NUM)),
-                Long.parseLong(queryCondition.get(PAGE_SIZE)));
-        baseMapper.selectPage(page, queryWrapper);
-        return new PageVo<>(page.getRecords(), page.getTotal());
+    public List<SysRole> selectRoleList(SysRole role) {
+        return roleMapper.selectRoleList(role);
     }
 
     /**
@@ -98,28 +75,28 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Override
     public SysRole selectRoleById(Long roleId) {
-        return baseMapper.selectById(roleId);
+        return roleMapper.selectRoleById(roleId);
     }
 
 
     @Override
     public boolean checkRoleNameUnique(SysRole role) {
-        //id不相同 名字相同
-        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getRoleName, role.getRoleName()) //名字相等
-                .ne(StringUtils.isNotNull(role.getRoleId()), SysRole::getRoleId, role.getRoleId())
-                .eq(SysRole::getDelFlag, NO_DELETE));
-        return count == NO_EXIST;
+        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();
+        SysRole info = roleMapper.checkRoleNameUnique(role.getRoleName());
+        if (StringUtils.isNotNull(info) && info.getRoleId().longValue() != roleId) {
+            return NOT_UNIQUE;
+        }
+        return UNIQUE;
     }
 
     @Override
     public boolean checkRoleKeyUnique(SysRole role) {
-        //id不相同 key系统
-        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getRoleKey, role.getRoleKey()) //名字相等
-                .ne(StringUtils.isNotNull(role.getRoleId()), SysRole::getRoleId, role.getRoleId())
-                .eq(SysRole::getDelFlag, NO_DELETE));
-        return count == NO_EXIST;
+        Long roleId = StringUtils.isNull(role.getRoleId()) ? -1L : role.getRoleId();
+        SysRole info = roleMapper.checkRoleKeyUnique(role.getRoleKey());
+        if (StringUtils.isNotNull(info) && info.getRoleId().longValue() != roleId) {
+            return NOT_UNIQUE;
+        }
+        return UNIQUE;
     }
 
     @Override
@@ -190,12 +167,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             }
         }
         // 删除角色与菜单关联
-        roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>()
-                .in(SysRoleMenu::getRoleId, roleIds));
-
-        return roleMapper.update(new SysRole(), new LambdaUpdateWrapper<SysRole>()
-                .in(SysRole::getRoleId, roleIds)
-                .set(SysRole::getDelFlag, DELETE));
+        roleMenuMapper.deleteRoleMenu(roleIds);
+        return roleMapper.deleteRoleByIds(roleIds);
     }
 
     /**
@@ -206,8 +179,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Override
     public int countUserRoleByRoleId(Long roleId) {
-        return userRoleMapper.selectCount(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, roleId));
+        return userRoleMapper.countUserRoleByRoleId(roleId);
     }
 
     /**
@@ -217,8 +189,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Override
     public List<SysRole> selectRoleAll() {
-        return baseMapper.selectList(new LambdaQueryWrapper<SysRole>()
-                .eq(SysRole::getDelFlag, NO_DELETE));
+        return selectRoleAll(new SysRole());
+    }
+
+    @Override
+    public List<SysRole> selectRoleAll(SysRole role) {
+        return roleMapper.selectRoleList(role);
     }
 
     /**
@@ -249,27 +225,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Override
     public int updateRoleStatus(SysRole role) {
-        boolean result = this.update(new SysRole(), new LambdaUpdateWrapper<SysRole>()
-                .eq(SysRole::getRoleId, role.getRoleId())
-                .set(SysRole::getStatus, role.getStatus())
-                .set(SysRole::getUpdateBy, role.getUpdateBy())
-                .set(SysRole::getUpdateTime, new Date()));
-        return result ? 1 : 0;
+        return roleMapper.updateRole(role);
     }
 
-    /**
-     * 通过用户id查询拥有的角色id
-     *
-     * @param userId
-     * @return
-     */
-    @Override
-    public long[] selectUserRoleIds(Long userId) {
-
-        return userRoleMapper.selectList(new LambdaQueryWrapper<SysUserRole>()
-                        .eq(SysUserRole::getUserId, userId))
-                .stream().mapToLong(SysUserRole::getRoleId).toArray();
-    }
 
     /**
      * @author xzh
@@ -278,16 +236,12 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
      */
     @Override
     public int deleteAuthUser(SysUserRole userRole) {
-        return userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, userRole.getRoleId())
-                .eq(SysUserRole::getUserId, userRole.getUserId()));
+        return userRoleMapper.deleteUserRoleInfo(userRole);
     }
 
     @Override
     public int deleteAuthUsers(Long roleId, Long[] userIds) {
-        return userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
-                .eq(SysUserRole::getRoleId, roleId)
-                .in(SysUserRole::getUserId, userIds));
+        return userRoleMapper.deleteUserRoleInfos(roleId, userIds);
     }
 
     @Override

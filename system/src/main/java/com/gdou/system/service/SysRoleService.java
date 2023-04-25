@@ -1,18 +1,16 @@
 package com.gdou.system.service;
 
 
-import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysRole;
 import com.gdou.common.domain.entity.SysUserRole;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface SysRoleService {
     Set<String> selectRolePermissionByUserId(Long userId);
 
-    PageVo<SysRole> selectRoleList(Map<String, String> queryMap);
+    List<SysRole> selectRoleList(SysRole role);
 
     void checkRoleDataScope(Long roleId);
 
@@ -34,11 +32,12 @@ public interface SysRoleService {
 
     List<SysRole> selectRoleAll();
 
+    List<SysRole> selectRoleAll(SysRole role);
+
     List<SysRole> selectRolesByUserId(Long userId);
 
     int updateRoleStatus(SysRole role);
 
-    long[] selectUserRoleIds(Long userId);
 
     int deleteAuthUser(SysUserRole userRole);
 

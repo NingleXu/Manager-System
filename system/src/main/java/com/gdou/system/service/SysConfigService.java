@@ -3,7 +3,7 @@ package com.gdou.system.service;
 import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysConfig;
 
-import java.util.Map;
+import java.util.List;
 
 public interface SysConfigService {
     boolean selectCaptchaEnabled();
@@ -14,7 +14,7 @@ public interface SysConfigService {
 
     SysConfig selectConfigById(Long configId);
 
-   PageVo<SysConfig> selectConfigList(Map<String, String> queryCondition);
+   List<SysConfig> selectConfigList(SysConfig queryCondition);
 
     void resetConfigCache();
 

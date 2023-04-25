@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
+
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
     List<String> selectMenuPermsByUserId(Long userId);
 

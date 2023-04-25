@@ -3,6 +3,7 @@ package com.gdou.system.service;
 import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysUser;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SysUserService {
@@ -10,7 +11,7 @@ public interface SysUserService {
 
     String selectUserRoleGroup(String username);
 
-    PageVo<SysUser> selectUserList(Map<String, String> queryMap);
+    List<SysUser> selectUserList(SysUser queryMap);
 
     SysUser selectUserById(Long userId);
 
@@ -32,11 +33,13 @@ public interface SysUserService {
 
     void recordLoginInfo(Long userId);
 
+    int updateUserProfile(SysUser user);
+
     void insertUserAuth(Long userId, Long[] roleIds);
 
     boolean resetPwd(SysUser user);
 
-    PageVo<SysUser> selectAllocatedList(Map<String, String> user);
+    List<SysUser> selectAllocatedList(SysUser user);
 
-    PageVo<SysUser> selectUnallocatedList(Map<String, String> queryMap);
+    List<SysUser> selectUnallocatedList(SysUser user);
 }

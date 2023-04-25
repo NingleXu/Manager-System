@@ -17,6 +17,12 @@ public class UserConstants {
     public static final int NO_EXIST = 0;
 
 
+    /** 校验是否唯一的返回标识 */
+    public final static boolean UNIQUE = true;
+    public final static boolean NOT_UNIQUE = false;
+
+
+
     /** 是否菜单外链（是） */
     public static final String YES_FRAME = "0";
 

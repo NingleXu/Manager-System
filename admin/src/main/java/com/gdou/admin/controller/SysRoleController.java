@@ -2,6 +2,7 @@ package com.gdou.admin.controller;
 
 
 import com.gdou.common.annotaion.Log;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysRole;
@@ -27,7 +28,7 @@ import static com.gdou.common.utils.SecurityUtils.getUsername;
 
 @RestController
 @RequestMapping("/system/role")
-public class SysRoleController {
+public class SysRoleController extends BaseController {
 
     @Autowired
     private SysRoleService roleService;
@@ -45,8 +46,10 @@ public class SysRoleController {
 
     @GetMapping("/list")
     @PreAuthorize("@check.hasPermi('system:role:list')")
-    public R list(@RequestParam Map<String, String> queryMap) {
-        return R.success(roleService.selectRoleList(queryMap));
+    public R list(SysRole role) {
+        startPage();
+        List<SysRole> list = roleService.selectRoleList(role);
+        return R.success(getPageVo(list));
     }
 
     /**
@@ -80,8 +83,10 @@ public class SysRoleController {
      */
     @PreAuthorize("@check.hasPermi('system:role:list')")
     @GetMapping("/authUser/allocatedList")
-    public R allocatedList(@RequestParam Map<String, String> queryMap) {
-        return R.success(userService.selectAllocatedList(queryMap));
+    public R allocatedList(SysUser user) {
+        startPage();
+        List<SysUser> list = userService.selectAllocatedList(user);
+        return R.success(getPageVo(list));
     }
 
     /**
@@ -89,8 +94,10 @@ public class SysRoleController {
      */
     @PreAuthorize("@check.hasPermi('system:role:list')")
     @GetMapping("/authUser/unallocatedList")
-    public R unallocatedList(@RequestParam Map<String, String> queryMap) {
-        return R.success(userService.selectUnallocatedList(queryMap));
+    public R unallocatedList(SysUser user) {
+        startPage();
+        List<SysUser> list = userService.selectUnallocatedList(user);
+        return R.success(getPageVo(list));
     }
 
     /**

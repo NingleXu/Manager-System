@@ -2,6 +2,7 @@ package com.gdou.admin.controller;
 
 
 import com.gdou.common.annotaion.Log;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysConfig;
@@ -19,7 +20,7 @@ import static com.gdou.common.utils.SecurityUtils.getUsername;
 
 @RestController
 @RequestMapping("/system/config")
-public class SysConfigController {
+public class SysConfigController extends BaseController {
 
     @Autowired
     private SysConfigService configService;
@@ -29,8 +30,9 @@ public class SysConfigController {
      */
     @PreAuthorize("@check.hasPermi('system:config:list')")
     @GetMapping("/list")
-    public R list(@RequestParam Map<String, String> queryCondition) {
-        return R.success(configService.selectConfigList(queryCondition));
+    public R list(SysConfig sysConfig) {
+        startPage();
+        return R.success(getPageVo(configService.selectConfigList(sysConfig)));
     }
 
     /**
@@ -56,7 +58,7 @@ public class SysConfigController {
     @PreAuthorize("@check.hasPermi('system:config:add')")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@Validated @RequestBody SysConfig config) {
+    public R add(@RequestBody SysConfig config) {
         if (!configService.checkConfigKeyUnique(config)) {
             return R.error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }

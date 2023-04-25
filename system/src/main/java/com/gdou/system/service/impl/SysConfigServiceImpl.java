@@ -1,11 +1,7 @@
 package com.gdou.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gdou.common.constant.CacheConstants;
 import com.gdou.common.constant.UserConstants;
-import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysConfig;
 import com.gdou.common.exception.ServiceException;
 import com.gdou.common.utils.RedisCache;
@@ -14,26 +10,24 @@ import com.gdou.common.utils.text.Convert;
 import com.gdou.system.mapper.SysConfigMapper;
 import com.gdou.system.service.SysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import static com.gdou.common.constant.PageConstants.*;
-import static com.gdou.common.constant.UserConstants.NO_EXIST;
+import static com.gdou.common.constant.UserConstants.*;
 
 
 @Service
-public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig> implements SysConfigService {
+public class SysConfigServiceImpl implements SysConfigService {
 
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
 
     //默认加载到缓存中
@@ -44,24 +38,8 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
 
 
     @Override
-    public PageVo<SysConfig> selectConfigList(Map<String, String> queryCondition) {
-        String configName = queryCondition.get(CONFIG_NAME);
-        String configKey = queryCondition.get(CONFIG_KEY);
-        String configType = queryCondition.get(CONFIG_TYPE);
-        String startTime = queryCondition.get(BEGIN_TIME);
-        String endTime = queryCondition.get(END_TIME);
-
-        LambdaQueryWrapper<SysConfig> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotNull(configName), SysConfig::getConfigName, configName)
-                .like(StringUtils.isNotNull(configKey), SysConfig::getConfigKey, configKey)
-                .eq(StringUtils.isNotNull(configType), SysConfig::getConfigType, configType)
-                .between(StringUtils.isNotEmpty(startTime) && StringUtils.isNotEmpty(endTime),
-                        SysConfig::getCreateTime, startTime, endTime);
-
-        Page<SysConfig> page = new Page<>(Long.parseLong(queryCondition.get(PAGE_NUM)),
-                Long.parseLong(queryCondition.get(PAGE_SIZE)));
-        baseMapper.selectPage(page, queryWrapper);
-        return new PageVo<>(page.getRecords(), page.getTotal());
+    public List<SysConfig> selectConfigList(SysConfig config) {
+        return sysConfigMapper.selectConfigList(config);
     }
 
     /**
@@ -86,7 +64,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
      */
     @Override
     public SysConfig selectConfigById(Long configId) {
-        return baseMapper.selectById(configId);
+        return sysConfigMapper.selectConfigById(configId);
     }
 
     /**
@@ -103,8 +81,9 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             return configValue;
         }
         //查询数据库
-        SysConfig retConfig = baseMapper.selectOne(new LambdaQueryWrapper<SysConfig>()
-                .eq(SysConfig::getConfigKey, configKey));
+        SysConfig sysConfig = new SysConfig();
+        sysConfig.setConfigKey(configKey);
+        SysConfig retConfig = sysConfigMapper.selectConfig(sysConfig);
         if (StringUtils.isNotNull(retConfig)) {
             redisCache.setCacheObject(CacheConstants.SYS_CONFIG_KEY + configKey, retConfig.getConfigValue());
             return retConfig.getConfigValue();
@@ -117,7 +96,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
      */
     @Override
     public void loadingConfigCache() {
-        List<SysConfig> configsList = baseMapper.selectList(null);
+        List<SysConfig> configsList = sysConfigMapper.selectConfigList(new SysConfig());
         for (SysConfig config : configsList) {
             redisCache.setCacheObject(CacheConstants.SYS_CONFIG_KEY + config.getConfigKey(), config.getConfigValue());
         }
@@ -131,14 +110,17 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
      */
     @Override
     public boolean checkConfigKeyUnique(SysConfig config) {
-        return baseMapper.selectCount(new LambdaQueryWrapper<SysConfig>()
-                .ne(StringUtils.isNotNull(config.getConfigId()), SysConfig::getConfigId, config.getConfigId())
-                .eq(SysConfig::getConfigKey, config.getConfigKey())) == NO_EXIST;
+        Long configId = StringUtils.isNull(config.getConfigId()) ? -1L : config.getConfigId();
+        SysConfig info = sysConfigMapper.checkConfigKeyUnique(config.getConfigKey());
+        if (StringUtils.isNotNull(info) && info.getConfigId().longValue() != configId) {
+            return NOT_UNIQUE;
+        }
+        return UNIQUE;
     }
 
     @Override
     public int insertConfig(SysConfig config) {
-        int row = baseMapper.insert(config);
+        int row = sysConfigMapper.insertConfig(config);
         if (row > 0) {
             redisCache.setCacheObject(CacheConstants.SYS_CONFIG_KEY + config.getConfigValue(),
                     config.getConfigValue());
@@ -154,11 +136,11 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
      */
     @Override
     public int updateConfig(SysConfig config) {
-        SysConfig temp = baseMapper.selectById(config.getConfigId());
+        SysConfig temp = sysConfigMapper.selectConfigById(config.getConfigId());
         if (!StringUtils.equals(temp.getConfigKey(), config.getConfigKey())) {
             redisCache.deleteObject(CacheConstants.SYS_CONFIG_KEY + temp.getConfigKey());
         }
-        int row = baseMapper.updateById(config);
+        int row = sysConfigMapper.updateConfig(config);
         if (row > 0) {
             redisCache.setCacheObject(CacheConstants.SYS_CONFIG_KEY + config.getConfigKey(), config.getConfigValue());
         }
@@ -177,8 +159,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigMapper, SysConfig
             if (StringUtils.equals(UserConstants.YES, config.getConfigType())) {
                 throw new ServiceException(String.format("内置参数【%1$s】不能删除 ", config.getConfigKey()));
             }
-            baseMapper.delete(new LambdaQueryWrapper<SysConfig>()
-                    .eq(SysConfig::getConfigId, configId));
+            sysConfigMapper.deleteConfigById(configId);
             redisCache.deleteObject(CacheConstants.SYS_CONFIG_KEY + config.getConfigKey());
         }
     }

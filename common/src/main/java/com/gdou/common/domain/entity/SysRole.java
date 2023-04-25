@@ -10,16 +10,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class SysRole extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
      * 角色ID
      */
-    @TableId(type = IdType.AUTO)
+
     private Long roleId;
 
     /**
@@ -50,13 +48,11 @@ public class SysRole extends BaseEntity {
     private String delFlag;
 
     /** 用户是否存在此角色标识 默认不存在 */
-    @TableField(exist = false)
     private boolean flag = false;
 
     /**
      * 角色菜单权限
      */
-    @TableField(exist = false)
     private Set<String> permissions;
 
     /**
@@ -67,7 +63,6 @@ public class SysRole extends BaseEntity {
     /**
      * 菜单组
      */
-    @TableField(exist = false)
     private Long[] menuIds;
 
     public SysRole(Long roleId){
@@ -84,5 +79,84 @@ public class SysRole extends BaseEntity {
 
     public static boolean isAdmin(Long roleId) {
         return roleId != null && 1L == roleId;
+    }
+
+    public SysRole() {
+    }
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getRoleKey() {
+        return roleKey;
+    }
+
+    public void setRoleKey(String roleKey) {
+        this.roleKey = roleKey;
+    }
+
+    public Integer getRoleSort() {
+        return roleSort;
+    }
+
+    public void setRoleSort(Integer roleSort) {
+        this.roleSort = roleSort;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public boolean isFlag() {
+        return flag;
+    }
+
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public void setMenuCheckStrictly(boolean menuCheckStrictly) {
+        this.menuCheckStrictly = menuCheckStrictly;
+    }
+
+    public Long[] getMenuIds() {
+        return menuIds;
+    }
+
+    public void setMenuIds(Long[] menuIds) {
+        this.menuIds = menuIds;
     }
 }

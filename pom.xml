@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.gdou</groupId>
-    <artifactId>manager-system</artifactId>
+    <artifactId>Manager-System</artifactId>
     <version>1.0</version>
     <packaging>pom</packaging>
 
@@ -31,7 +31,6 @@
         <kaptcha.version>2.3.3</kaptcha.version>
         <druid.version>1.2.8</druid.version>
         <fastjson.version>2.0.25</fastjson.version>
-        <mybatis-plus.version>3.3.0</mybatis-plus.version>
         <commons.io.version>2.11.0</commons.io.version>
         <bitwalker.version>1.21</bitwalker.version>
         <poi.version>4.1.2</poi.version>
@@ -62,11 +61,6 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>

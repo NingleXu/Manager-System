@@ -6,7 +6,6 @@
 
 <mapper namespace="com.gdou.system.mapper.SysUserMapper">
 
-
     <resultMap type="com.gdou.common.domain.entity.SysUser" id="SysUserResult">
         <id     property="userId"       column="user_id"      />
         <result property="userName"     column="user_name"    />
@@ -176,4 +175,8 @@
             AND u.phonenumber like concat('%', #{phonenumber}, '%')
         </if>
     </select>
+
+    <update id="resetUserPwd" parameterType="SysUser">
+        update sys_user set password = #{password} where user_name = #{userName}
+    </update>
 </mapper>

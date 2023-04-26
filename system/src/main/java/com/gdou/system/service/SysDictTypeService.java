@@ -5,11 +5,9 @@ import com.gdou.common.domain.entity.SysDictData;
 import com.gdou.common.domain.entity.SysDictType;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public interface SysDictTypeService {
-    PageVo<SysDictType> selectDictTypeList(Map<String, String> queryCondition);
+    List<SysDictType> selectDictTypeList(SysDictType dictType);
 
     List<SysDictData> selectDictDataByType(String dictType);
 

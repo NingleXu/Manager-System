@@ -1,14 +1,12 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gdou.common.domain.entity.SysMenu;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 
-public interface SysMenuMapper extends BaseMapper<SysMenu> {
+public interface SysMenuMapper {
     List<String> selectMenuPermsByUserId(Long userId);
 
     /**
@@ -35,4 +33,17 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
     List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
 
+    List<SysMenu> selectMenuList(SysMenu menu);
+
+    SysMenu selectMenuById(Long menuId);
+
+    int updateMenu(SysMenu menu);
+
+    int insertMenu(SysMenu menu);
+
+    SysMenu checkMenuNameUnique(SysMenu menu);
+
+    int hasChildByMenuId(Long menuId);
+
+    int deleteMenuById(Long menuId);
 }

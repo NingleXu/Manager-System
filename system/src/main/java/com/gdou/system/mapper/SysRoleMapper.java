@@ -1,14 +1,12 @@
 package com.gdou.system.mapper;
 
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gdou.common.domain.entity.SysRole;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 
-public interface SysRoleMapper extends BaseMapper<SysRole> {
+public interface SysRoleMapper {
 
     List<SysRole> selectRolePermissionByUserId(Long userId);
 
@@ -25,4 +23,6 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
     SysRole checkRoleKeyUnique(String roleKey);
 
     SysRole selectRoleById(Long roleId);
+
+    int insertRole(SysRole role);
 }

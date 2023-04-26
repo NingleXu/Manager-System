@@ -1,11 +1,17 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gdou.common.domain.entity.SysOperLog;
-import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 
-public interface SysOperLogMapper extends BaseMapper<SysOperLog> {
+public interface SysOperLogMapper{
     void cleanOperLog();
+
+    List<SysOperLog> selectOperLogList(SysOperLog operLog);
+
+    int insertSysOperLog(SysOperLog sysOperLog);
+
+    int deleteOperLogByIds(Long[] operIds);
 
 }

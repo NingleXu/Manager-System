@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.Set;
 
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class LoginUser {
     /**
      * 用户ID
@@ -63,13 +60,100 @@ public class LoginUser {
      */
     private SysUser user;
 
-    public LoginUser(Long userId,SysUser sysUser,Set<String> permissions){
+    public LoginUser(Long userId, SysUser sysUser, Set<String> permissions) {
         this.userId = userId;
         this.user = sysUser;
         this.permissions = permissions;
     }
 
-    public String  getUserName(){
+    public String getUserName() {
         return this.user.getUserName();
+    }
+
+    public String getPassword() {
+        return this.user.getPassword();
+    }
+
+    public LoginUser() {
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Long getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(Long loginTime) {
+        this.loginTime = loginTime;
+    }
+
+    public Long getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Long expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    public String getIpaddr() {
+        return ipaddr;
+    }
+
+    public void setIpaddr(String ipaddr) {
+        this.ipaddr = ipaddr;
+    }
+
+    public String getLoginLocation() {
+        return loginLocation;
+    }
+
+    public void setLoginLocation(String loginLocation) {
+        this.loginLocation = loginLocation;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getOs() {
+        return os;
+    }
+
+    public void setOs(String os) {
+        this.os = os;
+    }
+
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public SysUser getUser() {
+        return user;
+    }
+
+    public void setUser(SysUser user) {
+        this.user = user;
     }
 }

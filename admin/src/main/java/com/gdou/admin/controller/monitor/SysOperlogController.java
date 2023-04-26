@@ -1,7 +1,7 @@
 package com.gdou.admin.controller.monitor;
 
 import com.gdou.common.annotaion.Log;
-import com.gdou.common.domain.PageVo;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysOperLog;
 import com.gdou.common.enums.BusinessType;
@@ -10,19 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/monitor/operlog")
-public class SysOperlogController {
+public class SysOperlogController extends BaseController {
 
     @Autowired
     private SysOperLogService operLogService;
 
     @PreAuthorize("@check.hasPermi('monitor:operlog:list')")
     @GetMapping("/list")
-    public R list(@RequestParam Map<String, String> map) {
-        return R.success(operLogService.selectOperLogList(map));
+    public R list(SysOperLog operLog) {
+        startPage();
+        List<SysOperLog> list = operLogService.selectOperLogList(operLog);
+        return R.success(getPageVo(list));
     }
 
     @Log(title = "操作日志", businessType = BusinessType.DELETE)

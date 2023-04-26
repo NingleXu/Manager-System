@@ -1,10 +1,15 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gdou.common.domain.entity.SysLogininfor;
-import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 
-public interface SysLogininforMapper extends BaseMapper<SysLogininfor> {
+public interface SysLogininforMapper {
     void cleanLogininfor();
+    List<SysLogininfor> selectLogininforList(SysLogininfor logininfor);
+
+    int deleteLogininforByIds(Long[] infoIds);
+
+    int insertLogininfor(SysLogininfor sysLogininfor);
 }

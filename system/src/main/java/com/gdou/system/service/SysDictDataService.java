@@ -13,7 +13,7 @@ public interface SysDictDataService {
 
     int deleteDictDataByIds(Long[] dictCodes);
 
-    PageVo<SysDictData> selectDictDataList(Map<String, String> queryCondition);
+    List<SysDictData> selectDictDataList(SysDictData dictData);
 
     SysDictData selectDictDataById(Long dictCode);
 }

@@ -1,13 +1,13 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
 import com.gdou.common.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface SysUserMapper extends BaseMapper<SysUser> {
+public interface SysUserMapper {
     int updateUser(SysUser user);
 
     /**
@@ -46,4 +46,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return 用户信息集合信息
      */
     List<SysUser> selectUnallocatedList(SysUser user);
+
+    int resetUserPwd(String userName, String password);
 }

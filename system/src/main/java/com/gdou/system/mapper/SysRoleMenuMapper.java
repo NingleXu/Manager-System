@@ -1,16 +1,17 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
 import com.gdou.common.domain.entity.SysRoleMenu;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 
-public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
+public interface SysRoleMenuMapper {
     int batchRoleMenu(List<SysRoleMenu> list);
 
     int deleteRoleMenuByRoleId(Long roleId);
 
     int deleteRoleMenu(Long[] roleIds);
+
+    int checkMenuExistRole(Long menuId);
 }

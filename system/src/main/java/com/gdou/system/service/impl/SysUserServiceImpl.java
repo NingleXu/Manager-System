@@ -1,8 +1,6 @@
 package com.gdou.system.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gdou.common.domain.entity.SysRole;
 import com.gdou.common.domain.entity.SysUser;
 import com.gdou.common.domain.entity.SysUserRole;
@@ -25,7 +23,7 @@ import static com.gdou.common.constant.UserConstants.*;
 
 
 @Service
-public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
+public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
     private SysRoleMapper roleMapper;
@@ -261,10 +259,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * 修改用户密码
      */
     @Override
-    public boolean resetPwd(SysUser user) {
-        return this.update(new SysUser(), new LambdaUpdateWrapper<SysUser>()
-                .set(SysUser::getPassword, user.getPassword())
-                .eq(SysUser::getUserId, user.getUserId()));
+    public int resetPwd(SysUser user) {
+        return userMapper.updateUser(user);
     }
 
     /**
@@ -277,8 +273,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public  List<SysUser> selectUnallocatedList(SysUser user) {
+    public List<SysUser> selectUnallocatedList(SysUser user) {
         return userMapper.selectUnallocatedList(user);
 
+    }
+
+    /**
+     * @author xzh
+     * @time 2023/4/26 17:20
+     * 用户修改密码
+     */
+    @Override
+    public int resetUserPwd(String userName, String password) {
+        return userMapper.resetUserPwd(userName, password);
     }
 }

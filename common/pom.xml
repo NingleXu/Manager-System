@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.gdou</groupId>
-        <artifactId>manager-system</artifactId>
+        <artifactId>Manager-System</artifactId>
         <version>1.0</version>
     </parent>
 
@@ -40,10 +40,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
         <!-- SpringWeb模块 -->
         <dependency>

@@ -1,14 +1,10 @@
 package com.gdou.system.service.impl;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gdou.common.constant.Constants;
 import com.gdou.common.constant.UserConstants;
 import com.gdou.common.domain.TreeSelect;
 import com.gdou.common.domain.entity.SysMenu;
 import com.gdou.common.domain.entity.SysRole;
-import com.gdou.common.domain.entity.SysRoleMenu;
 import com.gdou.common.domain.entity.SysUser;
 import com.gdou.common.utils.MetaVo;
 import com.gdou.common.utils.SecurityUtils;
@@ -25,11 +21,10 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.gdou.common.constant.UserConstants.EXIST;
-import static com.gdou.common.constant.UserConstants.NO_EXIST;
+import static com.gdou.common.constant.UserConstants.*;
 
 @Service
-public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
+public class SysMenuServiceImpl implements SysMenuService {
 
     @Autowired
     private SysMenuMapper menuMapper;
@@ -48,7 +43,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public int deleteMenuById(Long menuId) {
-        return baseMapper.deleteById(menuId);
+        return menuMapper.deleteMenuById(menuId);
     }
 
     /**
@@ -59,9 +54,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public boolean hasChildByMenuId(Long menuId) {
-        int count = menuMapper.selectCount(new LambdaQueryWrapper<SysMenu>()
-                .eq(SysMenu::getParentId, menuId));
-        return count >= EXIST;
+        int count = menuMapper.hasChildByMenuId(menuId);
+        return count > 0;
     }
 
     /**
@@ -72,9 +66,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public boolean checkMenuExistRole(Long menuId) {
-        Integer count = roleMenuMapper.selectCount(new LambdaQueryWrapper<SysRoleMenu>()
-                .eq(SysRoleMenu::getMenuId, menuId));
-        return count >= EXIST;
+        int count = roleMenuMapper.checkMenuExistRole(menuId);
+        return count > 0;
     }
 
     /**
@@ -121,7 +114,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public List<Long> selectMenuListByRoleId(Long roleId) {
-        SysRole role = roleMapper.selectById(roleId);
+        SysRole role = roleMapper.selectRoleById(roleId);
         return menuMapper.selectMenuListByRoleId(roleId, role.isMenuCheckStrictly());
     }
 
@@ -131,14 +124,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenu> menuList = null;
         // 管理员显示所有菜单信息
         if (SysUser.isAdmin(userId)) {
-            LambdaQueryWrapper<SysMenu> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.orderByAsc(SysMenu::getParentId)
-                    .orderByAsc(SysMenu::getOrderNum)
-                    .like(StringUtils.isNotEmpty(menu.getMenuName()), SysMenu::getMenuName, menu.getMenuName())
-                    .eq(StringUtils.isNotEmpty(menu.getStatus()), SysMenu::getStatus, menu.getStatus());
-            menuList = menuMapper.selectList(queryWrapper);
+            menuList = menuMapper.selectMenuList(menu);
         } else {
-            menu.setUserId(userId);
+            menu.getParams().put("userId", userId);
             menuList = menuMapper.selectMenuListByUserId(menu);
         }
         return menuList;
@@ -187,17 +175,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Override
     public SysMenu selectMenuById(Long menuId) {
-        return baseMapper.selectById(menuId);
+        return menuMapper.selectMenuById(menuId);
     }
 
     @Override
     public int updateMenu(SysMenu menu) {
-        return baseMapper.updateById(menu);
+        return menuMapper.updateMenu(menu);
     }
 
     @Override
     public int insertMenu(SysMenu menu) {
-        return baseMapper.insert(menu);
+        return menuMapper.insertMenu(menu);
     }
 
     /**
@@ -208,9 +196,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public boolean checkMenuNameUnique(SysMenu menu) {
-        return baseMapper.selectCount(new LambdaQueryWrapper<SysMenu>()
-                .ne(StringUtils.isNotNull(menu.getMenuId()), SysMenu::getMenuId, menu.getMenuId())
-                .eq(SysMenu::getMenuName, menu.getMenuName())) == NO_EXIST;
+        Long menuId = StringUtils.isNull(menu.getMenuId()) ? -1L : menu.getMenuId();
+        SysMenu temp = menuMapper.checkMenuNameUnique(menu);
+        if (StringUtils.isNotNull(temp) && temp.getMenuId().longValue() != menuId){
+            return NOT_UNIQUE;
+        }
+        return UNIQUE;
     }
 
 

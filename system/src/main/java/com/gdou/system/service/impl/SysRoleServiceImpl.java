@@ -9,7 +9,6 @@ import com.gdou.common.exception.ServiceException;
 import com.gdou.common.utils.StringUtils;
 import com.gdou.system.mapper.SysRoleMapper;
 import com.gdou.system.mapper.SysRoleMenuMapper;
-import com.gdou.system.mapper.SysUserMapper;
 import com.gdou.system.mapper.SysUserRoleMapper;
 import com.gdou.system.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,6 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Autowired
     private SysUserRoleMapper userRoleMapper;
-
-    @Autowired
-    private SysUserMapper userMapper;
 
     @Override
     public Set<String> selectRolePermissionByUserId(Long userId) {
@@ -100,9 +96,10 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
+    @Transactional
     public int insertRole(SysRole role) {
         //插入角色
-        roleMapper.insert(role);
+        roleMapper.insertRole(role);
         //插入角色菜单表
         return insertRoleMenu(role);
     }
@@ -149,7 +146,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public int updateRole(SysRole role) {
         // 修改角色信息
-        roleMapper.updateById(role);
+        roleMapper.updateRole(role);
         // 删除角色与菜单关联
         roleMenuMapper.deleteRoleMenuByRoleId(role.getRoleId());
         return insertRoleMenu(role);

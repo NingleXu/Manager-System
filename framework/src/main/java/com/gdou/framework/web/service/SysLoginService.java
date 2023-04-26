@@ -52,7 +52,6 @@ public class SysLoginService {
     }
 
     public LoginUser createLoginUser(SysUser user) {
-        user.setPassword(StringUtils.EMPTY);
         return new LoginUser(user.getUserId(), user, permissionService.getMenuPermission(user));
     }
 

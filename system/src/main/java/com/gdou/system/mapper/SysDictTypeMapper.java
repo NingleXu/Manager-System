@@ -1,9 +1,22 @@
 package com.gdou.system.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gdou.common.domain.entity.SysDictType;
-import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 
-public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
+public interface SysDictTypeMapper {
+    List<SysDictType> selectDictTypeList(SysDictType dictType);
+
+    SysDictType selectDictTypeById(Long dictId);
+
+    List<SysDictType> selectDictTypeAll();
+
+    int insertDictType(SysDictType dictType);
+
+    int updateDictType(SysDictType dict);
+
+    int deleteDictTypeById(Long dictId);
+
+    SysDictType checkDictTypeUnique(String dictType);
 }

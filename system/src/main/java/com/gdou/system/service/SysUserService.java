@@ -1,10 +1,8 @@
 package com.gdou.system.service;
 
-import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.entity.SysUser;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SysUserService {
     SysUser selectUserByUserName(String username);
@@ -37,9 +35,11 @@ public interface SysUserService {
 
     void insertUserAuth(Long userId, Long[] roleIds);
 
-    boolean resetPwd(SysUser user);
+    int resetPwd(SysUser user);
 
     List<SysUser> selectAllocatedList(SysUser user);
 
     List<SysUser> selectUnallocatedList(SysUser user);
+
+    int resetUserPwd(String userName, String password);
 }

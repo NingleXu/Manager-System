@@ -16,10 +16,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.github.pagehelper.PageHelper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.gdou.common.utils.SecurityUtils.getUserId;

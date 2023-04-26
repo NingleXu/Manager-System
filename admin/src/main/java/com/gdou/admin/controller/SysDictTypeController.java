@@ -1,6 +1,7 @@
 package com.gdou.admin.controller;
 
 import com.gdou.common.annotaion.Log;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.PageVo;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysDictType;
@@ -26,15 +27,16 @@ import static org.apache.commons.lang3.SystemUtils.getUserName;
  */
 @RestController
 @RequestMapping("/system/dict/type")
-public class SysDictTypeController {
+public class SysDictTypeController extends BaseController {
     @Autowired
     private SysDictTypeService dictTypeService;
 
     @PreAuthorize("@check.hasPermi('system:dict:list')")
     @GetMapping("/list")
-    public R list(@RequestParam  Map<String, String> queryCondition) {
-        PageVo<SysDictType> pageVo = dictTypeService.selectDictTypeList(queryCondition);
-        return R.success(pageVo);
+    public R list(SysDictType dictType) {
+        startPage();
+        List<SysDictType> list =  dictTypeService.selectDictTypeList(dictType);
+        return R.success(getPageVo(list));
     }
 
 //    @Log(title = "字典类型", businessType = BusinessType.EXPORT)
@@ -62,7 +64,7 @@ public class SysDictTypeController {
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
     public R add(@RequestBody SysDictType dict) {
-        if (dictTypeService.checkDictTypeUnique(dict)) {
+        if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.error("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setCreateBy(SecurityUtils.getUsername());
@@ -76,7 +78,7 @@ public class SysDictTypeController {
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
     public R edit(@RequestBody SysDictType dict) {
-        if (dictTypeService.checkDictTypeUnique(dict)) {
+        if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.error("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setUpdateBy(SecurityUtils.getUsername());

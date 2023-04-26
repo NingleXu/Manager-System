@@ -2,6 +2,7 @@ package com.gdou.admin.controller;
 
 
 import com.gdou.common.annotaion.Log;
+import com.gdou.common.core.BaseController;
 import com.gdou.common.domain.R;
 import com.gdou.common.domain.entity.SysDictData;
 import com.gdou.common.enums.BusinessType;
@@ -23,7 +24,7 @@ import static com.gdou.common.utils.SecurityUtils.getUsername;
  */
 @RestController
 @RequestMapping("/system/dict/data")
-public class SysDictDataController {
+public class SysDictDataController extends BaseController {
     @Autowired
     private SysDictDataService dictDataService;
 
@@ -32,8 +33,9 @@ public class SysDictDataController {
 
     @PreAuthorize("@check.hasPermi('system:dict:list')")
     @GetMapping("/list")
-    public R list(@RequestParam Map<String, String> queryCondition) {
-        return R.success(dictDataService.selectDictDataList(queryCondition));
+    public R list(SysDictData dictData) {
+        List<SysDictData> list = dictDataService.selectDictDataList(dictData);
+        return R.success(getPageVo(list));
     }
 
 //    @Log(title = "字典数据", businessType = BusinessType.EXPORT)
